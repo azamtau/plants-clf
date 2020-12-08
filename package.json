@@ -1,0 +1,34 @@
+{
+  "name": "leafs-clf",
+  "version": "1.0.0",
+  "description": "Leafs classifier",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel ./src/*.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/azamtau/plants-clf.git"
+  },
+  "keywords": [
+    "Keras",
+    "TensorFlow",
+    "TF.js"
+  ],
+  "author": "Azamat Tavitov",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/azamtau/plants-clf/issues"
+  },
+  "homepage": "https://github.com/azamtau/plants-clf#readme",
+  "dependencies": {
+    "@tensorflow/tfjs": "^2.7.0",
+    "xstate": "^4.15.1"
+  },
+  "devDependencies": {
+    "babel-polyfill": "^6.26.0",
+    "parcel-bundler": "^1.12.4",
+    "parcel-plugin-static-files-copy": "^2.5.0"
+  }
+}
