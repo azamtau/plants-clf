@@ -4,18 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Leaf deseases classifier</title>
-    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./style.scss" />
   </head>
   <body>
     <header>
         <h1>LEAFS</h1>
         <p>Leafs deseases classifier</p>
     </header>
-    <main>
+    <main id="container">
         <div class="content">
             <input type="file" id="file-input" name="userPhoto" accept="image/png, image/jpeg, image/jpg" />
-            <!-- <button id="webcam" class="webcam-btn">Webcam photo</button> -->
             <canvas id="canvas"></canvas>
+            <p id="prediction"></p>
         </div>
         <div class="controls">
             <button id="predict" class="predict-btn">Predict</button>

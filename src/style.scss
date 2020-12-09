@@ -26,16 +26,67 @@ body >* {
 }
 
 header {
-    background-color: red;
+    background-color: #ffffff;
 }
 
-main {
+// main {
+//     display: flex;
+//     flex-direction: column;
+//     align-content: stretch;
+//     justify-content: space-between;
+    
+//     background-color: blue;
+// }
+
+#retry {
+    display: none;
+}
+
+#predict {
+    display: none;
+}
+
+#file-input {
+    display: none;
+}
+
+#prediction {
+    display: none;
+}
+
+main[data-state^=preload] {
+    display: none;
+}
+
+main[data-state^=idle] { 
     display: flex;
     flex-direction: column;
     align-content: stretch;
     justify-content: space-between;
-    
     background-color: blue;
+
+    #file-input {
+        display: block;
+    }
+}
+
+main[data-state^=staged] {
+    #predict {
+        display: block;
+    }
+}
+
+main[data-state^=processing] {
+    background-color: black;
+}
+
+main[data-state^=finished] {
+    #retry {
+        display: block;
+    }
+    #prediction {
+        display: block;
+    }
 }
 
 .content {
@@ -48,17 +99,6 @@ main {
     background-color: yellow;
     /* padding: 5vh; */
 }
-
-/* 
-#content[data-state^=preload] {
-    opacity: 0.8;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.4);
-}
-  
-#content[data-state=idle] {
-    transition: all 0.3s ease-in-out;
-} 
-*/
 
 .controls {
     display: flex;

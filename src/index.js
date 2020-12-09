@@ -2,10 +2,12 @@ import 'babel-polyfill';
 import * as tf from '@tensorflow/tfjs';
 import { createMachine, assign, interpret } from 'xstate';
 
+const container   = document.querySelector('#container');
 const uploadInpt  = document.querySelector('#file-input');
 const predictBtn  = document.querySelector('#predict');
-const retryBtn = document.querySelector('#retry');
-const cnv = document.querySelector('#canvas');
+const retryBtn    = document.querySelector('#retry');
+const cnv         = document.querySelector('#canvas');
+const predictionP = document.querySelector('#prediction');
 
 const assignModel = assign({
     model: (context, event) => {
@@ -27,6 +29,7 @@ const assignFile = assign({
 
 const assignCnvImg = assign({
     cnvImg: (context, event) => {
+        // TBD: add isFile check
         let img = document.createElement("img");
         img.src = window.URL.createObjectURL(context.imgSrc);
         //img.height = 560;
@@ -114,6 +117,12 @@ const machine = createMachine({
         },
         finished: {
             // type: 'final',
+            exit: (context, event) => {
+                let ctx = cnv.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);  
+                uploadInpt.value = '';  
+                predictionP.innerText = '';
+            },
             on: {
                 'retry.click': {
                     target: 'idle',
@@ -136,14 +145,18 @@ const machine = createMachine({
 
 const service = interpret(machine);
 service.onTransition((state) => {
-    // TBD: data-state 
-    // elContent.dataset.state = state.toStrings().join(' ');
+    container.dataset.state = state.toStrings().join(' ');
     
     console.log(state.value);
 
     if (state.changed) {
         if (state.value === 'finished') {
             console.log(`Predicted class: ${state.context.class}`);
+            predictionP.innerText = `Predicted class: ${state.context.class}`;
+            // let ctx = cnv.getContext('2d');
+            // ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        if (state.value === 'finished') {
         }
         console.log(state.context);
     }
