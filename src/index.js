@@ -4,6 +4,8 @@ import { createMachine, assign, interpret } from 'xstate';
 
 const uploadInpt  = document.querySelector('#file-input');
 const predictBtn  = document.querySelector('#predict');
+const retryBtn = document.querySelector('#retry');
+const cnv = document.querySelector('#canvas');
 
 const assignModel = assign({
     model: (context, event) => {
@@ -11,22 +13,59 @@ const assignModel = assign({
     },
 });
 
+const assignPrediction = assign({
+    class: (context, event) => {
+        return event.data;
+    },
+});
+
 const assignFile = assign({
     imgSrc: (context, event) => {
-        return event.target.files[0];
+        return event.target.files ? event.target.files[0] : undefined;
     },
+});
+
+const assignCnvImg = assign({
+    cnvImg: (context, event) => {
+        let img = document.createElement("img");
+        img.src = window.URL.createObjectURL(context.imgSrc);
+        //img.height = 560;
+        img.onload = function() {
+            window.URL.revokeObjectURL(this.src);
+            cnv.width = 200;//img.width;
+            cnv.height = 500; //img.height;
+            let ctx = cnv.getContext('2d');
+            ctx.drawImage(img,0,0);
+        }
+        return img;
+    },
+});
+
+const resetCntx = assign({
+    cnvImg: undefined,
+    imgSrc: undefined,
+    class: '',
 });
 
 const loadModel = async (url) => {
     return await tf.loadLayersModel(url);
+};
+ 
+const predict = async (model, img, labels) => {
+    let tensorImg = tf.browser.fromPixels(img).resizeNearestNeighbor([60, 40]).toFloat().expandDims();
+    let prediction = await model.predict(tensorImg).data();
+    
+    return labels[prediction.indexOf(Math.max(...prediction))];
 };
 
 const machine = createMachine({
     initial: 'preload',
     context: {
         modelUrl: '/model.json',
+        labels: ['cat', 'dog', 'beaver'],
         model: undefined,
-        imgSrc: '',
+        cnvImg: undefined,
+        imgSrc: undefined,
         class: '',
     },
     states: {
@@ -36,41 +75,51 @@ const machine = createMachine({
                 src: (context, event) => {
                     return loadModel(context.modelUrl);
                 },
-                // onDone: {
-                //     target: 'idle',
-                //     actions: assignModel, 
-                // },
-                //onError: 'rejected',
-            },
-            on: {
-                'done.invoke.getModel': {
-                    actions: assignModel, 
+                onDone: {
                     target: 'idle',
+                    actions: assignModel, 
                 },
+                //onError: 'myCodeIsBylletproof',
             },
         },
         idle: {
             on: {
                 change: {
-                    actions: assignFile,
+                    actions: [assignFile, assignCnvImg],
                     target: 'staged',
+                    cond: 'hasModel',
                 },
             },
         },
         staged: {
             on: {
                 click: {
-                    // action: ,
                     target: 'pocessing',
                     cond: 'hasFile',
                 }
             },
         },
         pocessing: {
-            // TBD: invoke promise
+            invoke: {
+                id: 'predict',
+                src: (context, event) => {
+                    return predict(context.model, context.cnvImg, context.labels);
+                },
+                onDone: {
+                    target: 'finished',
+                    actions: assignPrediction, 
+                },
+                //onError: 'myCodeIsBylletproof',
+            },
         },
-        final: {
-            type: 'final',
+        finished: {
+            // type: 'final',
+            on: {
+                'retry.click': {
+                    target: 'idle',
+                    actions: resetCntx,
+                }
+            },
         },
     },
 },
@@ -80,7 +129,7 @@ const machine = createMachine({
             return !!context.model;
         },
         hasFile: (context, event) => {
-            return context.imgSrc !== null && context.imSrc !== "" && !!context.imgSrc; //&& event.target.files.length !== 0; 
+            return context.imgSrc !== null && context.imSrc !== "" && !!context.imgSrc; 
         },
     },
 });
@@ -89,12 +138,14 @@ const service = interpret(machine);
 service.onTransition((state) => {
     // TBD: data-state 
     // elContent.dataset.state = state.toStrings().join(' ');
+    
     console.log(state.value);
-    console.log(state.context.model);
 
     if (state.changed) {
-        console.log("STATE CHANGED"); 
-        
+        if (state.value === 'finished') {
+            console.log(`Predicted class: ${state.context.class}`);
+        }
+        console.log(state.context);
     }
 });
 service.start();
@@ -105,4 +156,8 @@ uploadInpt.addEventListener('change', (e) => {
 
 predictBtn.addEventListener('click', (e) => {
     service.send(e);
+}, false);
+
+retryBtn.addEventListener('click', (e) => {
+    service.send({ type: 'retry.click', target: e.target});
 }, false);
