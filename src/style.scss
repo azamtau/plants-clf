@@ -29,21 +29,30 @@ header {
     background-color: #ffffff;
 }
 
-// main {
-//     display: flex;
-//     flex-direction: column;
-//     align-content: stretch;
-//     justify-content: space-between;
-    
-//     background-color: blue;
-// }
-
 #retry {
     display: none;
+    width: 100%;
+    height: 5vh;
+    background: #fffff1;
+    border: none;
+    border-radius: 3px;
+    font-size: 1.2rem;
 }
 
 #predict {
     display: none;
+    width: 100%;
+    height: 5vh;
+    border: none;
+    border-radius: 3px;
+    background: rgb(88,237,117);
+    background: linear-gradient(30deg, rgba(88,237,117,1) 6%, rgba(83,59,246,1) 100%, rgba(0,212,255,1) 100%);
+    color: #ffffff;
+    font-size: 1.2rem;
+}
+
+#predict, #retry {
+    cursor: pointer;
 }
 
 #file-input {
@@ -52,6 +61,35 @@ header {
 
 #prediction {
     display: none;
+    font-size: 1.5rem;
+}
+
+.content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex-direction: column;
+    flex: auto;
+    align-items: center;
+    border-radius: 3px;
+    /* padding: 5vh; */
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 1rem;
+    
+    // background-color: green;
+    // padding: 3vh;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-content: stretch;
+    justify-content: space-between;
 }
 
 main[data-state^=preload] {
@@ -59,12 +97,6 @@ main[data-state^=preload] {
 }
 
 main[data-state^=idle] { 
-    display: flex;
-    flex-direction: column;
-    align-content: stretch;
-    justify-content: space-between;
-    background-color: blue;
-
     #file-input {
         display: block;
     }
@@ -78,6 +110,11 @@ main[data-state^=staged] {
 
 main[data-state^=processing] {
     background-color: black;
+
+    .content {
+        background-color: #ffffff1a;
+        backdrop-filter: blur(10px);
+    }
 }
 
 main[data-state^=finished] {
@@ -87,27 +124,51 @@ main[data-state^=finished] {
     #prediction {
         display: block;
     }
+
+    .content {
+        background-color: #ffffffc2;
+        backdrop-filter: blur(10px);
+    }
 }
 
-.content {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    flex-direction: column;
-    flex: auto;
-    
-    background-color: yellow;
-    /* padding: 5vh; */
+#container {
+    background-size: cover;
 }
 
-.controls {
+
+
+/* Loader animation. Code credits to: https://codepen.io/wang0nya/pen/bzwQPr */
+#loader:not([hidden]) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
-    
-    background-color: green;
-    padding: 3vh;
-}
+    align-items: center;
+  }
+  
+  #loader::after {
+    content: "";
+    width: 80px;
+    height: 80px;
+    border: 2px solid #f3f3f3;
+    border-top: 3px solid #11c511;
+    border-radius: 100%;
+    will-change: transform;
+    animation: spin 1s infinite linear
+  }
+  
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
 
 /* Medium devices (tablets) */
 @media only screen and (min-width: 768px) {

@@ -8,6 +8,7 @@ const predictBtn  = document.querySelector('#predict');
 const retryBtn    = document.querySelector('#retry');
 const cnv         = document.querySelector('#canvas');
 const predictionP = document.querySelector('#prediction');
+const loader      = document.querySelector('#loader');
 
 const assignModel = assign({
     model: (context, event) => {
@@ -32,14 +33,11 @@ const assignCnvImg = assign({
         // TBD: add isFile check
         let img = document.createElement("img");
         img.src = window.URL.createObjectURL(context.imgSrc);
-        //img.height = 560;
+        container.style.backgroundImage = `url('${img.src}')`;
         img.onload = function() {
             window.URL.revokeObjectURL(this.src);
-            cnv.width = 200;//img.width;
-            cnv.height = 500; //img.height;
-            let ctx = cnv.getContext('2d');
-            ctx.drawImage(img,0,0);
         }
+
         return img;
     },
 });
@@ -49,6 +47,14 @@ const resetCntx = assign({
     imgSrc: undefined,
     class: '',
 });
+
+const showLoader = () => {
+    loader.removeAttribute('hidden');
+};
+
+const hideLoader = () => {
+    loader.setAttribute('hidden', '');
+};
 
 const loadModel = async (url) => {
     return await tf.loadLayersModel(url);
@@ -73,6 +79,8 @@ const machine = createMachine({
     },
     states: {
         preload: {
+            entry: showLoader,
+            exit: hideLoader,
             invoke: {
                 id: 'getModel',
                 src: (context, event) => {
@@ -80,9 +88,9 @@ const machine = createMachine({
                 },
                 onDone: {
                     target: 'idle',
-                    actions: assignModel, 
+                    actions: [assignModel], 
                 },
-                //onError: 'myCodeIsBylletproof',
+                //onError: 'myCodeIsBulletproof',
             },
         },
         idle: {
@@ -103,6 +111,8 @@ const machine = createMachine({
             },
         },
         pocessing: {
+            entry: showLoader,
+            exit: hideLoader,
             invoke: {
                 id: 'predict',
                 src: (context, event) => {
@@ -112,14 +122,15 @@ const machine = createMachine({
                     target: 'finished',
                     actions: assignPrediction, 
                 },
-                //onError: 'myCodeIsBylletproof',
+                //onError: 'myCodeIsBulletproof',
             },
         },
         finished: {
             // type: 'final',
             exit: (context, event) => {
-                let ctx = cnv.getContext('2d');
-                ctx.clearRect(0, 0, canvas.width, canvas.height);  
+                // let ctx = cnv.getContext('2d');
+                // ctx.clearRect(0, 0, canvas.width, canvas.height); 
+                container.style.backgroundImage = 'none';
                 uploadInpt.value = '';  
                 predictionP.innerText = '';
             },
@@ -153,8 +164,6 @@ service.onTransition((state) => {
         if (state.value === 'finished') {
             console.log(`Predicted class: ${state.context.class}`);
             predictionP.innerText = `Predicted class: ${state.context.class}`;
-            // let ctx = cnv.getContext('2d');
-            // ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
         if (state.value === 'finished') {
         }

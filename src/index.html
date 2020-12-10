@@ -9,12 +9,11 @@
   <body>
     <header>
         <h1>LEAFS</h1>
-        <p>Leafs deseases classifier</p>
+        <p>Dummy tf.js classifier</p>
     </header>
     <main id="container">
         <div class="content">
             <input type="file" id="file-input" name="userPhoto" accept="image/png, image/jpeg, image/jpg" />
-            <canvas id="canvas"></canvas>
             <p id="prediction"></p>
         </div>
         <div class="controls">
@@ -22,6 +21,7 @@
             <button id="retry" class="retry-btn">Retry</button>
         </div>
     </main>
+    <div hidden id="loader"></div>
     <script src="./index.js"></script>
   </body>
 </html>
