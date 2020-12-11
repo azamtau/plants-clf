@@ -3,6 +3,8 @@ import * as tf from '@tensorflow/tfjs';
 import { createMachine, assign, interpret } from 'xstate';
 
 const container   = document.querySelector('#container');
+const contentEl   = document.querySelector('.content');
+
 const uploadInpt  = document.querySelector('#file-input');
 const predictBtn  = document.querySelector('#predict');
 const retryBtn    = document.querySelector('#retry');
@@ -33,7 +35,8 @@ const assignCnvImg = assign({
         // TBD: add isFile check
         let img = document.createElement("img");
         img.src = window.URL.createObjectURL(context.imgSrc);
-        container.style.backgroundImage = `url('${img.src}')`;
+        //container.style.backgroundImage = `url('${img.src}')`;
+        contentEl.style.backgroundImage = `url('${img.src}')`;
         img.onload = function() {
             window.URL.revokeObjectURL(this.src);
         }
@@ -128,9 +131,7 @@ const machine = createMachine({
         finished: {
             // type: 'final',
             exit: (context, event) => {
-                // let ctx = cnv.getContext('2d');
-                // ctx.clearRect(0, 0, canvas.width, canvas.height); 
-                container.style.backgroundImage = 'none';
+                contentEl.style.backgroundImage = 'none';
                 uploadInpt.value = '';  
                 predictionP.innerText = '';
             },

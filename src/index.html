@@ -8,14 +8,20 @@
   </head>
   <body>
     <header>
-        <h1>LEAFS</h1>
-        <p>Dummy tf.js classifier</p>
+        <h1>Leafs</h1>
+        <p class="desc">Dummy tf.js classifier</p>
     </header>
     <main id="container">
+      
         <div class="content">
-            <input type="file" id="file-input" name="userPhoto" accept="image/png, image/jpeg, image/jpg" />
+            <div id="file-wrapper" class="btn-wrapper">
+              <span class="label">Upload image</span>
+              <input type="file" id="file-input" name="userPhoto" accept="image/png, image/jpeg, image/jpg" />
+            </div>
+          
             <p id="prediction"></p>
         </div>
+      
         <div class="controls">
             <button id="predict" class="predict-btn">Predict</button>
             <button id="retry" class="retry-btn">Retry</button>
