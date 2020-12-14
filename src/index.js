@@ -35,8 +35,7 @@ const assignCnvImg = assign({
         // TBD: add isFile check
         let img = document.createElement("img");
         img.src = window.URL.createObjectURL(context.imgSrc);
-        //container.style.backgroundImage = `url('${img.src}')`;
-        contentEl.style.backgroundImage = `url('${img.src}')`;
+        contentEl.style.background = `url('${img.src}') center center / cover no-repeat fixed`;
         img.onload = function() {
             window.URL.revokeObjectURL(this.src);
         }
@@ -67,6 +66,7 @@ const predict = async (model, img, labels) => {
     let tensorImg = tf.browser.fromPixels(img).resizeNearestNeighbor([60, 40]).toFloat().expandDims();
     let prediction = await model.predict(tensorImg).data();
     
+    tensorImg.dispose();
     return labels[prediction.indexOf(Math.max(...prediction))];
 };
 
@@ -74,7 +74,7 @@ const machine = createMachine({
     initial: 'preload',
     context: {
         modelUrl: '/model.json',
-        labels: ['cat', 'dog', 'beaver'],
+        labels: ['CBB', 'CBSD', 'CGM', 'CMD', 'Healthy'],
         model: undefined,
         cnvImg: undefined,
         imgSrc: undefined,
@@ -82,7 +82,7 @@ const machine = createMachine({
     },
     states: {
         preload: {
-            entry: showLoader,
+            // entry: showLoader,
             exit: hideLoader,
             invoke: {
                 id: 'getModel',
@@ -159,16 +159,16 @@ const service = interpret(machine);
 service.onTransition((state) => {
     container.dataset.state = state.toStrings().join(' ');
     
-    console.log(state.value);
+    //console.log(state.value);
 
     if (state.changed) {
         if (state.value === 'finished') {
-            console.log(`Predicted class: ${state.context.class}`);
-            predictionP.innerText = `Predicted class: ${state.context.class}`;
+            //console.log(`Predicted class: ${state.context.class}`);
+            predictionP.innerText = `${state.context.class} - 80%\nCGM - 10%`;
         }
         if (state.value === 'finished') {
         }
-        console.log(state.context);
+        //console.log(state.context);
     }
 });
 service.start();

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Leaf deseases classifier</title>
-    <link rel="stylesheet" href="./style.scss" />
+    <link defer rel="stylesheet" href="./style.scss" />
   </head>
   <body>
     <header>
@@ -13,13 +13,18 @@
     </header>
     <main id="container">
       
-        <div class="content">
-            <div id="file-wrapper" class="btn-wrapper">
-              <span class="label">Upload image</span>
-              <input type="file" id="file-input" name="userPhoto" accept="image/png, image/jpeg, image/jpg" />
-            </div>
-          
+        <div class="content-wrapper">
+          <div class="content">
+              <div id="file-wrapper" class="btn-wrapper">
+                <span class="label">Upload image</span>
+                <input type="file" id="file-input" name="userPhoto" accept="image/png, image/jpeg, image/jpg" />
+              </div>
+          </div>
+          <div class="report">
+            <h3>Results</h3>
+            <hr>
             <p id="prediction"></p>
+          </div>
         </div>
       
         <div class="controls">
@@ -27,7 +32,7 @@
             <button id="retry" class="retry-btn">Retry</button>
         </div>
     </main>
-    <div hidden id="loader"></div>
-    <script src="./index.js"></script>
+    <div id="loader"></div>
+    <script defer src="./index.js"></script>
   </body>
 </html>
